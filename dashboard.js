@@ -114,8 +114,6 @@ function getCurrentSettings() {
 
 // Function to apply settings to dashboard
 function applySettingsToDashboard() {
-    const settings = getCurrentSettings();
-    
     // If we're currently viewing job details, re-render them with new settings
     if (currentJobId) {
         renderJobDetails(currentJobId);
@@ -661,7 +659,6 @@ function setupEventListeners() {
         // Handle dropdown item selection
         jobSortOrderMenu.addEventListener('click', (e) => {
             if (e.target.classList.contains('dropdown-item')) {
-                const value = e.target.dataset.value;
                 const text = e.target.textContent;
                 
                 // Update button text
@@ -1052,9 +1049,6 @@ function setupSearchFunctionality(job) {
         const searchTerm = this.value.toLowerCase().trim();
         
         if (searchTerm === '') {
-            // Show all resumes when search is empty (sorted)
-            const sortedResumes = sortResumes(job.resumes, jobSortOrder);
-
             // Clear existing content first
             while (resumesList.firstChild) {
                 resumesList.removeChild(resumesList.firstChild);

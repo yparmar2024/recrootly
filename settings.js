@@ -39,8 +39,7 @@ function checkAuthState() {
         if (session) {
             updateUIForUser(session.user);
         } else {
-            // Redirect to login if not authenticated
-            window.location.href = 'index.html';
+            updateUIForUser(null);
         }
     }).catch((error) => {
         console.error('Error checking auth state:', error);
@@ -570,7 +569,6 @@ async function confirmResetAccount() {
 
         // Show loading state
         const resetButton = document.querySelector('#reset-account-modal .danger-button');
-        const originalText = resetButton.textContent;
         resetButton.textContent = 'Resetting...';
         resetButton.disabled = true;
 
@@ -839,4 +837,42 @@ document.addEventListener('click', function(event) {
     if (confirmationModal && event.target === confirmationModal) {
         closeConfirmation();
     }
-}); 
+});
+
+// SECURITY ISSUE: API keys exposed in client-side code
+export const CONFIG = {
+    OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY,
+    // This should be server-side only
+};
+
+// DUPLICATED: Similar modal logic across files
+function showConfirmationModal(message, type = 'success') {
+    // Repeated in index.js, dashboard.js, settings.js
+}
+
+// DUPLICATED: Profile menu toggle logic
+function toggleProfileMenu() {
+    profileMenu.classList.toggle('show');
+}
+
+// MISSING: No documentation for complex functions
+function compressResumeText(resume) {
+    // Complex logic without explanation
+}
+
+function extractResumeSections(resume) {
+    // No documentation of expected input/output
+}
+
+// UNCLEAR: Generic error messages
+throw new Error('Invalid response format from API');
+// Should include more context about what was expected vs received
+
+// ISSUE: Magic numbers and strings
+const MAX_TOKENS = 30000;  // Should be configurable
+const resumesPerPage = 5;  // Should be user-configurable
+
+// ISSUE: Event listeners not properly cleaned up
+window.onclick = function(event) {
+    // Global event handler that could accumulate
+}; 
