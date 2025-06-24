@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Check authentication state and update UI
 function checkAuthState() {
+    // Show loading state immediately
+    if (userEmail) {
+        userEmail.textContent = 'Loading...';
+    }
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
             updateUIForUser(session.user);
@@ -37,6 +42,15 @@ function checkAuthState() {
             // Redirect to login if not authenticated
             window.location.href = 'index.html';
         }
+    }).catch((error) => {
+        console.error('Error checking auth state:', error);
+        // Show error and redirect
+        if (userEmail) {
+            userEmail.textContent = 'Error loading user data';
+        }
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2000);
     });
 }
 
@@ -44,12 +58,16 @@ function checkAuthState() {
 function updateUIForUser(user) {
     if (user && userEmail) {
         userEmail.textContent = user.email;
+    } else if (userEmail) {
+        userEmail.textContent = 'Loading...'; // Fallback text
     }
     
     // Also update the account email in settings section
     const accountEmail = document.getElementById('account-email');
     if (user && accountEmail) {
         accountEmail.textContent = user.email;
+    } else if (accountEmail) {
+        accountEmail.textContent = 'Loading...'; // Fallback text
     }
 }
 
