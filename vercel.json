@@ -1,5 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+"routes": [
+    { "src": "/dashboard", "dest": "/src/components/dashboard/dashboard.html" },
+    { "src": "/settings", "dest": "/src/components/settings/settings.html" },
+    { "src": "/(.*)", "dest": "/src/components/landing/index.html" }
   ]
 }
