@@ -1,7 +1,9 @@
 {
-"routes": [
-    { "src": "/dashboard", "dest": "/src/components/dashboard/dashboard.html" },
-    { "src": "/settings", "dest": "/src/components/settings/settings.html" },
-    { "src": "/(.*)", "dest": "/src/components/landing/index.html" }
-  ]
-}
+    "buildCommand": null,
+    "outputDirectory": ".",
+    "routes": [
+      { "src": "/dashboard", "dest": "/dashboard.html" },
+      { "src": "/settings", "dest": "/settings.html" },
+      { "src": "/(.*)", "dest": "/index.html" }
+    ]
+  }
