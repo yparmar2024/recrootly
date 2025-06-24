@@ -673,6 +673,10 @@ supabase.auth.onAuthStateChange((event, session) => {
 // Make functions globally available for onclick handlers
 window.saveSettings = saveSettings;
 window.closeConfirmation = closeConfirmation;
+window.closeChangeEmailModal = closeChangeEmailModal;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.closeResetAccountModal = closeResetAccountModal;
+window.confirmResetAccount = confirmResetAccount;
 
 // Add this after your existing functions
 function showModal(title, message, type = 'success', showCloseButton = true) {
@@ -808,4 +812,31 @@ function loadSortOrderSetting() {
 }
 
 // Call this function when the page loads
-loadSortOrderSetting(); 
+loadSortOrderSetting();
+
+// Add click-outside-to-close functionality for all modals
+document.addEventListener('click', function(event) {
+    // Close change email modal when clicking outside
+    const changeEmailModal = document.getElementById('change-email-modal');
+    if (changeEmailModal && event.target === changeEmailModal) {
+        closeChangeEmailModal();
+    }
+    
+    // Close change password modal when clicking outside
+    const changePasswordModal = document.getElementById('change-password-modal');
+    if (changePasswordModal && event.target === changePasswordModal) {
+        closeChangePasswordModal();
+    }
+    
+    // Close reset account modal when clicking outside
+    const resetAccountModal = document.getElementById('reset-account-modal');
+    if (resetAccountModal && event.target === resetAccountModal) {
+        closeResetAccountModal();
+    }
+    
+    // Close confirmation modal when clicking outside
+    const confirmationModal = document.getElementById('confirmation-modal');
+    if (confirmationModal && event.target === confirmationModal) {
+        closeConfirmation();
+    }
+}); 
