@@ -1,8 +1,15 @@
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [],
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        dashboard: 'dashboard.html',
+        settings: 'settings.html'
+      }
+    }
+  },
   server: {
     port: 5173,
     open: true
