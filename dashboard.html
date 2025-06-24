@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recrootly - Demo Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html"><img src="logo.png" alt="Recrootly Logo" class="nav-logo-img"></a>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <!-- Login button (shown when not logged in) -->
+                    <button class="btn-secondary" id="open-login" style="display: none;">Login</button>
+                    
+                    <!-- Profile dropdown (shown when logged in) -->
+                    <div class="profile-dropdown" id="profile-dropdown" style="display: none;">
+                        <button class="profile-btn" id="profile-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="user-email">user@example.com</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="settings.html" class="profile-menu-item">
+                                <i class="fas fa-cog"></i>
+                                Settings
+                            </a>
+                            <a href="#" class="profile-menu-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+        <div class="container">
+            <h1>Dashboard</h1>
+            <p>Experience Recrootly's AI-powered recruitment platform</p>
+        </div>
+    </section>
+
+    <!-- Main Dashboard -->
+    <section class="dashboard-main">
+        <div class="container">
+            <div class="dashboard-grid">
+                <!-- Jobs Section -->
+                <div class="jobs-section">
+                    <div class="section-header">
+                        <h2>Job Postings</h2>
+                        <button class="btn-primary" id="add-job-btn">
+                            <i class="fas fa-plus"></i> Add New Job
+                        </button>
+                    </div>
+                    
+                    <div class="jobs-list" id="jobs-list">
+                        <!-- Jobs will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Job Details Section -->
+                <div class="job-details-section" id="job-details">
+                    <div class="section-header">
+                        <h2>Select a Job</h2>
+                        <p>Choose a job posting to view applicants and add resumes</p>
+                    </div>
+                    
+                    <!-- Search Section (initially hidden) -->
+                    <div class="search-section" id="search-section" style="display: none;">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="applicant-search" placeholder="Search applicants by name..." class="search-input">
+                            <button id="clear-search" class="clear-search-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Resumes List Container -->
+                    <div class="resumes-list" id="resumes-list">
+                        <!-- Resumes will be populated here -->
+                    </div>
+                    
+                    <!-- Load More Container -->
+                    <div id="load-more-container" style="text-align: center; margin-top: 2rem;">
+                        <!-- Load more button will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Job Modal -->
+    <div id="add-job-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="job-modal-title">Add New Job Posting</h2>
+            
+            <!-- Warning message for editing -->
+            <div id="edit-warning" class="warning-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p><strong>Warning:</strong> Changing the job title, description, or custom AI instructions will not affect resumes that have already been analyzed. Only new resumes will use the updated criteria.</p>
+            </div>
+            
+            <form id="add-job-form">
+                <div class="form-group">
+                    <label for="job-title">Job Title</label>
+                    <input type="text" id="job-title" placeholder="Enter job title here..." required>
+                </div>
+                <div class="form-group">
+                    <label for="job-description">Job Description</label>
+                    <textarea id="job-description" rows="4" placeholder="Enter job description here..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="custom-instructions">Custom AI Instructions (Optional)</label>
+                    <textarea id="custom-instructions" rows="4" placeholder="e.g., Prioritize candidates with startup experience, Focus on React/TypeScript skills, Prefer candidates with remote work experience..."></textarea>
+                    <small class="form-help">Add specific criteria or preferences for AI analysis of resumes for this role</small>
+                </div>
+                <div class="form-group">
+                    <label for="sort-order">Default Sort Order for Applicants</label>
+                    <div class="custom-dropdown">
+                        <button type="button" class="dropdown-btn" id="job-sort-order-btn">
+                            <span id="job-sort-order-text">AI Score (High to Low)</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu" id="job-sort-order-menu">
+                            <div class="dropdown-item" data-value="score-desc">AI Score (High to Low)</div>
+                            <div class="dropdown-item" data-value="score-asc">AI Score (Low to High)</div>
+                            <div class="dropdown-item" data-value="date-desc">Recently Added</div>
+                            <div class="dropdown-item" data-value="date-asc">Oldest First</div>
+                            <div class="dropdown-item" data-value="name-asc">Name (A-Z)</div>
+                            <div class="dropdown-item" data-value="name-desc">Name (Z-A)</div>
+                        </div>
+                    </div>
+                    <small class="form-help">How applicants will be sorted when viewing this job's resumes</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-job">Cancel</button>
+                    <button type="submit" class="btn-primary" id="job-submit-btn">Create Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Resume Modal -->
+    <div id="add-resume-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Add Resume</h2>
+            <form id="add-resume-form">
+                <div class="form-group">
+                    <label for="resume-name">Applicant Name</label>
+                    <input type="text" id="resume-name" placeholder="e.g., John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="resume-file">Resume File (Optional)</label>
+                    <div class="file-upload-container">
+                        <input type="file" id="resume-file" accept=".pdf,.doc,.docx,.txt">
+                        <div class="file-upload-info">
+                            <p>Supported formats: PDF, DOC, DOCX, TXT</p>
+                            <p>Maximum file size: 10MB</p>
+                            <p><em>Or enter resume text below</em></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="resume-text">Resume Text (Required if no file uploaded)</label>
+                    <textarea id="resume-text" placeholder="Paste the resume content here..." rows="8" style="width: 100%; resize: vertical;"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancel-resume">Cancel</button>
+                    <button type="submit" class="btn-primary">Analyze Resume</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resume Analysis Modal -->
+    <div id="analysis-modal" class="modal" style="display:none;">
+        <div class="modal-content analysis-content">
+            <span class="close-modal">&times;</span>
+            <div class="analysis-header">
+                <h2 id="analysis-title">Resume Analysis</h2>
+                <div class="score-display">
+                    <span class="score-label">AI Score:</span>
+                    <span class="score-value" id="ai-score">0</span>
+                    <span class="score-max">/100</span>
+                </div>
+            </div>
+            <div class="analysis-sections">
+                <div class="analysis-section">
+                    <h3><i class="fas fa-thumbs-up"></i> Strengths</h3>
+                    <ul id="strengths-list">
+                        <!-- Strengths will be populated dynamically -->
+                    </ul>
+                </div>
+                <div class="analysis-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Areas for Improvement</h3>
+                    <ul id="weaknesses-list">
+                        <!-- Weaknesses will be populated dynamically -->
+                    </ul>
+                </div>
+                <div class="analysis-section">
+                    <h3><i class="fas fa-chart-line"></i> Overall Assessment</h3>
+                    <p id="overall-assessment">
+                        <!-- Assessment will be populated dynamically -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Auth Modal (same as index.html) -->
+    <div id="auth-modal" class="auth-modal" style="display:none;">
+        <div class="auth-modal-content">
+            <span id="close-auth-modal" class="close-auth-modal">&times;</span>
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form">
+                <input type="email" id="auth-email" placeholder="Email" required>
+                <input type="password" id="auth-password" placeholder="Password" required>
+                <button type="submit" class="btn-primary" style="width:100%;" id="auth-submit">Login</button>
+            </form>
+            <p id="auth-toggle" style="text-align: center; margin-top: 1rem; cursor: pointer; color: #cccccc;">
+                Don't have an account? <span style="color: #ffffff; text-decoration: underline;">Sign up</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Job Card Template -->
+    <template id="job-card-template">
+        <div class="job-card" data-job-id="">
+            <div class="job-info">
+                <h3 class="job-title"></h3>
+                <p class="job-description"></p>
+                <div class="job-meta">
+                    <span class="applicants-count"></span>
+                    <span class="job-date"></span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Job Details Template -->
+    <template id="job-details-template">
+        <div class="section-header">
+            <h2 class="job-details-title"></h2>
+            <p class="job-details-meta"></p>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-section" id="search-section">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="applicant-search" placeholder="Search applicants by name..." class="search-input">
+                <button id="clear-search" class="clear-search-btn" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Job Actions -->
+        <div class="job-actions" style="margin-bottom: 2rem;">
+            <button class="btn-primary" id="add-resume-btn">
+                <i class="fas fa-plus"></i> Add Resume
+            </button>
+            <button class="btn-secondary" id="edit-job-btn">
+                <i class="fas fa-edit"></i> Edit Job
+            </button>
+            <button class="btn-secondary btn-trash-job" id="remove-job-btn">
+                <i class="fas fa-trash"></i> Remove Job
+            </button>
+        </div>
+        
+        <!-- Resumes List -->
+        <div class="resumes-list" id="resumes-list">
+            <!-- Resumes will be populated here -->
+        </div>
+        
+        <!-- Load More Container -->
+        <div id="load-more-container" style="text-align: center; margin-top: 2rem;">
+            <!-- Load more button will be added here -->
+        </div>
+    </template>
+
+    <!-- Resume Card Template -->
+    <template id="resume-card-template">
+        <div class="resume-card" data-resume-id="">
+            <div class="resume-score"></div>
+            <div class="resume-info">
+                <h4 class="resume-name"></h4>
+                <p>Click to view detailed analysis</p>
+            </div>
+            <button class="btn-secondary btn-trash-resume">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </template>
+
+    <!-- Empty Resumes Template -->
+    <template id="empty-resumes-template">
+        <p style="color: #888888; text-align: center; padding: 2rem;">No resumes added yet. Click "Add Resume" to get started.</p>
+    </template>
+
+    <!-- Load More Button Template -->
+    <template id="load-more-button-template">
+        <button class="btn-secondary" id="load-more-btn">Load More Resumes</button>
+    </template>
+
+    <!-- All Loaded Template -->
+    <template id="all-loaded-template">
+        <p style="color: #888888;">All resumes loaded</p>
+    </template>
+
+    <!-- Resume Remove Confirmation Modal -->
+    <div id="remove-resume-modal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <div class="confirmation-icon">
+                <i class="fas fa-trash" style="color: white;"></i>
+            </div>
+            <h3>Remove Resume</h3>
+            <p>Are you sure you want to remove this resume? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancel-remove-resume" class="btn-secondary">Cancel</button>
+                <button id="confirm-remove-resume" class="btn-primary">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Remove Confirmation Modal -->
+     <div id="remove-job-modal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <div class="confirmation-icon">
+                <i class="fas fa-trash" style="color: white;"></i>
+            </div>
+            <h3>Remove Job</h3>
+            <p>Are you sure you want to remove this job? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancel-remove-job" class="btn-secondary">Cancel</button>
+                <button id="confirm-remove-job" class="btn-primary">Remove</button>
+            </div>
+        </div>
+     </div>
+
+    <!-- Success/Error Confirmation Modal -->
+    <div id="confirmation-modal" class="confirmation-modal" style="display:none;">
+        <div class="confirmation-content">
+            <div class="confirmation-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 id="confirmation-title">Success!</h3>
+            <p id="confirmation-message">Operation completed successfully.</p>
+            <button id="confirmation-ok-btn" class="btn-primary">OK</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script type="module" src="resumeAnalysis.js"></script>
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html> 

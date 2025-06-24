@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recrootly - AI-Powered Recruitment Software</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="#home"><img src="logo.png" alt="Recrootly Logo" class="nav-logo-img"></a>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <!-- Login button (shown when not logged in) -->
+                    <button class="btn-secondary" id="open-login" style="display: none;">Login</button>
+                    
+                    <!-- Profile dropdown (shown when logged in) -->
+                    <div class="profile-dropdown" id="profile-dropdown" style="display: none;">
+                        <button class="profile-btn" id="profile-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="user-email">user@example.com</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="settings.html" class="profile-menu-item">
+                                <i class="fas fa-cog"></i>
+                                Settings
+                            </a>
+                            <a href="#" class="profile-menu-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Revolutionize Your Recruitment Process</h1>
+                <p>Upload job postings and resumes to receive AI-powered feedback, scoring, and ranking of candidates. Find the perfect hire faster than ever before.</p>
+                <div class="hero-buttons">
+                    <button class="btn-outline btn-large" id="hero-dashboard-btn">Go to Dashboard</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <h3>95%</h3>
+                        <p>Faster Hiring</p>
+                    </div>
+                    <div class="stat">
+                        <h3>100</h3>
+                        <p>AI Score System</p>
+                    </div>
+                    <div class="stat">
+                        <h3>24/7</h3>
+                        <p>Instant Feedback</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="dashboard-mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="mockup-content">
+                        <div class="candidate-card">
+                            <div class="candidate-info">
+                                <h4>Sarah Johnson</h4>
+                                <p>Senior Developer</p>
+                            </div>
+                            <div class="score">92</div>
+                        </div>
+                        <div class="candidate-card">
+                            <div class="candidate-info">
+                                <h4>Mike Chen</h4>
+                                <p>Full Stack Engineer</p>
+                            </div>
+                            <div class="score">87</div>
+                        </div>
+                        <div class="candidate-card">
+                            <div class="candidate-info">
+                                <h4>Emily Davis</h4>
+                                <p>React Developer</p>
+                            </div>
+                            <div class="score">84</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Powerful Features for Modern Recruiters</h2>
+                <p>Everything you need to streamline your hiring process and find the best candidates</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h3>Easy Upload</h3>
+                    <p>Upload job postings and candidate resumes with just a few clicks. Support for multiple file formats.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI Analysis</h3>
+                    <p>Advanced AI algorithms analyze each resume for strengths, weaknesses, and job fit.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Smart Scoring</h3>
+                    <p>Get detailed scores out of 100 for each candidate based on skills, experience, and job requirements.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sort-amount-down"></i>
+                    </div>
+                    <h3>Auto Ranking</h3>
+                    <p>Candidates are automatically ranked from highest to lowest score for easy comparison.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Detailed Feedback</h3>
+                    <p>Receive comprehensive feedback on each candidate's strengths and areas for improvement.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Instant Results</h3>
+                    <p>Get analysis results in seconds, not hours. Speed up your hiring process dramatically.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Three simple steps to transform your recruitment process</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Upload Your Data</h3>
+                        <p>Upload your job posting and candidate resumes. Our system supports PDF, DOC, DOCX, and TXT formats.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>AI Analysis</h3>
+                        <p>Our advanced AI analyzes each resume against the job requirements, identifying key skills and experience.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Get Results</h3>
+                        <p>Receive detailed feedback, scores out of 100, and a ranked list of candidates from best to least suitable.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question"><span class="faq-icon">💬</span> What does Recrootly do, and how can it help my hiring process?</div>
+                    <div class="faq-answer">
+                        Recrootly uses AI to automatically evaluate and rank candidate resumes based on how well they match a job description you've uploaded. Instead of manually screening each application, Recrootly gives each resume a score out of 100 with clear feedback — helping you quickly identify the top candidates for the role.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span class="faq-icon">💬</span> How do I use Recrootly as a recruiter?</div>
+                    <div class="faq-answer">
+                        After creating an account, you can post a job description and upload resumes for that role. Recrootly will analyze each resume using advanced AI models, generate a fit score and feedback, and then rank all candidates so you can focus on the most qualified applicants first.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span class="faq-icon">💬</span> Is my company's data safe on Recrootly?</div>
+                    <div class="faq-answer">
+                        Yes. All job postings and uploaded resumes are securely stored and only accessible to authorized users within your account. Recrootly follows industry best practices for data security and never shares your proprietary information with third parties. Your data is automatically deleted after <strong>60 days</strong> to ensure optimal system performance and security. We recommend downloading any important analysis results before this period expires.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Combined CTA and Contact Section -->
+    <section id="contact" class="cta-contact-section">
+        <div class="container cta-contact-container">
+            <div class="cta-content cta-side">
+                <h2>Ready to Transform Your Hiring Process?</h2>
+                <p>Join thousands of recruiters who are already saving time and finding better candidates with Recrootly.</p>
+            </div>
+            <div class="contact-section contact-side">
+                <div class="section-header">
+                    <h2>Contact Us</h2>
+                    <p>Have a question or want to get in touch? Fill out the form below and we'll get back to you soon.</p>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" name="email" placeholder="Your email address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        <textarea id="contact-message" name="message" rows="5" placeholder="Your message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Recrootly</h3>
+                    <p>Recrootly is an AI-powered recruitment platform that enables recruiters to effortlessly upload job postings and candidate resumes, receive instant, detailed feedback on each applicant, and view ranked candidate lists based on AI-generated scores. Streamline your hiring process, make smarter decisions, and find the best talent faster—all for free.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <ul>
+                        <li><a href="#home">About</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Recrootly. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal" style="display:none;">
+        <div class="auth-modal-content">
+            <span id="close-auth-modal" class="close-auth-modal">&times;</span>
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form">
+                <input type="email" id="auth-email" placeholder="Email" required>
+                <input type="password" id="auth-password" placeholder="Password" required>
+                <button type="submit" class="btn-primary" style="width:100%;" id="auth-submit">Login</button>
+            </form>
+            <p id="auth-toggle" style="text-align: center; margin-top: 1rem; cursor: pointer; color: #cccccc;">
+                Don't have an account? <span style="color: #ffffff; text-decoration: underline;">Sign up</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
