@@ -93,21 +93,20 @@ export async function getResumeFeedback(resume, jobDescription, customInstructio
         
         // If tokens exceed limit, try compressing job description first
         if (estimatedTokens > MAX_INPUT_TOKENS) {
-            console.log(`Tokens (${estimatedTokens}) exceed limit (${MAX_INPUT_TOKENS}), compressing job description...`);
-            jobDescriptionToUse = compressJobDescription(jobDescription);
+            jobDescriptionToUse = compressJobDescription(cleanedJobDescription);
+            instructionsToUse = fullInstructions;
             estimatedTokens = estimateTokenCount(fullResume, jobDescriptionToUse, instructionsToUse);
             
-            // If still too long, try compressing instructions too
-            if (estimatedTokens > MAX_INPUT_TOKENS && fullInstructions) {
-                console.log(`Still too many tokens (${estimatedTokens}), compressing instructions...`);
-                instructionsToUse = compressInstructions(fullInstructions);
-                estimatedTokens = estimateTokenCount(fullResume, jobDescriptionToUse, instructionsToUse);
-            }
-            
-            // If still too long after compressing job description and instructions, use chunking
+            // If still too many tokens, try compressing instructions
             if (estimatedTokens > MAX_INPUT_TOKENS) {
-                console.log(`Still too many tokens (${estimatedTokens}), using chunking strategy...`);
-                return await analyzeWithChunking(resume, jobDescription, customInstructions, model);
+                jobDescriptionToUse = compressJobDescription(cleanedJobDescription);
+                instructionsToUse = fullInstructions ? compressInstructions(fullInstructions) : '';
+                estimatedTokens = estimateTokenCount(fullResume, jobDescriptionToUse, instructionsToUse);
+                
+                // If still too many tokens, use chunking strategy
+                if (estimatedTokens > MAX_INPUT_TOKENS) {
+                    return await analyzeWithChunking(resume, jobDescription, customInstructions, model);
+                }
             }
         }
 
@@ -139,18 +138,7 @@ export async function getResumeFeedback(resume, jobDescription, customInstructio
 
                             Avoid copying or repeating exact lines from the resume. Your analysis should offer insight into how well the candidate fits the job beyond what a recruiter could instantly observe.
 
-                            Job Description: ${jobDescriptionToUse}
-
-                            Resume: ${fullResume}`;
-
-        // Log the request details for debugging
-        console.log('API Request Details:');
-        console.log('Model:', model);
-        console.log('Resume Length:', fullResume.length);
-        console.log('Job Description Length:', jobDescriptionToUse.length);
-        console.log('Instructions Length:', instructionsToUse.length);
-        console.log('Estimated Tokens:', estimatedTokens);
-        console.log('Resume Preview (first 200 chars):', fullResume.substring(0, 200));
+                            Job Description: ${jobDescriptionToUse}\n\n                            Resume: ${fullResume}`;
 
         // Make the API request
         const response = await fetch(CONFIG.OPENROUTER_API_URL, {
@@ -179,12 +167,7 @@ export async function getResumeFeedback(resume, jobDescription, customInstructio
 
         const data = await response.json();
         
-        // Add detailed logging for debugging
-        console.log('API Response Status:', response.status);
-        console.log('API Response Data:', data);
-        
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-            console.error('Invalid API response structure:', data);
             throw new Error(`Invalid response format from API. Response: ${JSON.stringify(data)}`);
         }
 

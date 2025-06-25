@@ -141,10 +141,8 @@ function initializeSettingsControls() {
     document.querySelectorAll('.toggle-switch input').forEach(toggle => {
         toggle.addEventListener('change', function() {
             const settingName = this.getAttribute('data-setting');
-            if (settingName) {
-                currentSettings[settingName] = this.checked;
-                console.log(`Setting changed: ${settingName} = ${this.checked}`);
-            }
+            currentSettings[settingName] = this.checked;
+            saveSettings(currentSettings);
         });
     });
 
@@ -152,10 +150,8 @@ function initializeSettingsControls() {
     document.querySelectorAll('.select-control').forEach(select => {
         select.addEventListener('change', function() {
             const settingName = this.getAttribute('data-setting');
-            if (settingName) {
-                currentSettings[settingName] = this.value;
-                console.log(`Setting changed: ${settingName} = ${this.value}`);
-            }
+            currentSettings[settingName] = this.value;
+            saveSettings(currentSettings);
         });
     });
 
@@ -222,20 +218,17 @@ function applySettingsToUI() {
 }
 
 // Save settings functionality
-function saveSettings() {
+function saveSettings(settings) {
     // Force convert numeric values to numbers
-    currentSettings.dataRetention = parseInt(currentSettings.dataRetention, 10);
+    settings.dataRetention = parseInt(settings.dataRetention, 10);
     
     // Save to localStorage
-    localStorage.setItem('recrootlySettings', JSON.stringify(currentSettings));
+    localStorage.setItem('recrootlySettings', JSON.stringify(settings));
     
     // Show confirmation modal
-    if (confirmationModal) {
-        confirmationModal.style.display = 'flex';
-    }
+    showConfirmationModal('Settings saved successfully!', 'success');
     
     // Here you would typically also send settings to your backend
-    console.log('Settings saved:', currentSettings);
 }
 
 // Close confirmation modal
@@ -255,10 +248,20 @@ function handleButtonAction(action) {
             showChangePasswordModal();
             break;
         case 'export-data':
-            exportUserData();
+            handleExportData();
+            break;
+        case 'delete-resumes':
+            handleDeleteResumes();
+            break;
+        case 'delete-jobs':
+            handleDeleteJobs();
+            break;
+        case 'reset-account':
+            handleResetAccount();
             break;
         default:
-            console.log('Unknown action:', action);
+            // Unknown action
+            break;
     }
 }
 
@@ -269,7 +272,8 @@ function handleDangerAction(action) {
             showResetAccountConfirmation();
             break;
         default:
-            console.log('Unknown danger action:', action);
+            // Unknown danger action
+            break;
     }
 }
 
@@ -508,7 +512,7 @@ async function handleChangePassword(e) {
 }
 
 // Export user data
-async function exportUserData() {
+async function handleExportData() {
     try {
         // Get current user
         const { data: { session } } = await supabase.auth.getSession();

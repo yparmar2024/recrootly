@@ -6,16 +6,8 @@ let supabase;
 try {
     if (window.supabase && SUPABASE_URL !== 'https://your-project.supabase.co' && SUPABASE_ANON_KEY !== 'your-anon-key') {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('Supabase client initialized successfully');
     } else {
-        console.log('Supabase not available or environment variables not set');
-        // Fallback: show login button if Supabase isn't available
-        document.addEventListener('DOMContentLoaded', () => {
-            const openLoginBtn = document.getElementById('open-login');
-            const profileDropdown = document.getElementById('profile-dropdown');
-            if (openLoginBtn) openLoginBtn.style.display = 'block';
-            if (profileDropdown) profileDropdown.style.display = 'none';
-        });
+        // Supabase not available or environment variables not set
     }
 } catch (error) {
     console.error('Error initializing Supabase:', error);
@@ -273,10 +265,10 @@ if (supabase) {
             // Show login button if there's an error
             updateUIForUser(null);
         } else if (session) {
-            console.log('User is logged in:', session.user.email);
+            // User is logged in
             updateUIForUser(session.user);
         } else {
-            console.log('No active session, showing login button');
+            // No active session, showing login button
             updateUIForUser(null);
         }
     }).catch((error) => {
@@ -287,18 +279,19 @@ if (supabase) {
 
     // 12. Listen for auth state changes
     supabase.auth.onAuthStateChange((event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
-        if (event === 'SIGNED_IN') {
+        if (event === 'SIGNED_IN' && session) {
             updateUIForUser(session.user);
         } else if (event === 'SIGNED_OUT') {
             updateUIForUser(null);
         }
     });
 } else {
-    console.log('Supabase not available, showing login button by default');
-    // Show login button if Supabase is not available
+    // Fallback: show login button if Supabase isn't available
     document.addEventListener('DOMContentLoaded', () => {
-        updateUIForUser(null);
+        const openLoginBtn = document.getElementById('open-login');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        if (openLoginBtn) openLoginBtn.style.display = 'block';
+        if (profileDropdown) profileDropdown.style.display = 'none';
     });
 }
 
@@ -373,12 +366,16 @@ document.addEventListener('DOMContentLoaded', function() {
       // Send email using EmailJS
       emailjs.send('service_q5l9qyr', 'template_fsdoj1u', templateParams)
         .then(function(response) {
-          console.log('SUCCESS!', response.status, response.text);
-          showConfirmationModal('Thank you! Your message has been sent successfully. We\'ll get back to you soon.', 'success');
-          contactForm.reset(); // Clear the form
+          if (response.ok) {
+            // Success
+            showConfirmationModal('Message sent successfully!', 'success');
+            contactForm.reset();
+          } else {
+            // Error
+            showConfirmationModal('Failed to send message. Please try again.', 'error');
+          }
         }, function(error) {
-          console.log('FAILED...', error);
-          showConfirmationModal('Sorry, there was an error sending your message. Please try again later.', 'error');
+          showConfirmationModal('Failed to send message. Please try again.', 'error');
         })
         .finally(function() {
           // Reset button state
