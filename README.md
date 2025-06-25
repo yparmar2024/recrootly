@@ -2,7 +2,7 @@
 
 Recrootly is a modern web application that helps recruiters and hiring managers analyze resumes using AI. It provides intelligent scoring, strengths/weaknesses analysis, and detailed feedback for each candidate against specific job descriptions.
 
-## �� Features
+## ✨ Features
 
 - **AI-Powered Resume Analysis** - Get detailed feedback on candidate resumes
 - **Job Management** - Create and manage job postings
@@ -12,6 +12,7 @@ Recrootly is a modern web application that helps recruiters and hiring managers 
 - **Real-time Updates** - Instant feedback and analysis results
 - **Data Export** - Export user data and analysis results
 - **Settings Management** - Customizable sorting, auto-ranking, and data retention
+- **Contact Form** - Store submissions and enable email notifications (via Zapier or Edge Functions)
 
 ## 🛠️ Tech Stack
 
@@ -31,7 +32,7 @@ Before running this application, you'll need:
 3. **OpenRouter API Key** (for AI analysis)
 4. **Supabase Account** (for database and authentication)
 
-## �� Quick Start
+## 🚀 Quick Start
 
 ### 1. Clone the Repository
 
@@ -107,6 +108,23 @@ CREATE TABLE resumes (
 );
 ```
 
+#### Contact Submissions Table
+```sql
+CREATE TABLE contact_submissions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anon insert" ON contact_submissions
+  FOR INSERT TO anon
+  WITH CHECK (true);
+```
+
 #### Row Level Security (RLS) Policies
 ```sql
 -- Enable RLS
@@ -172,7 +190,7 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
-## �� Usage
+## 🛠️ Usage
 
 ### Getting Started
 1. **Sign Up/Login** - Create an account or log in to your existing account
@@ -297,7 +315,7 @@ Make sure to set these in your deployment platform:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## �� Acknowledgments
+## 🪧 Acknowledgments
 
 - [OpenRouter](https://openrouter.ai/) for AI model access
 - [Supabase](https://supabase.com/) for database and authentication
