@@ -11,6 +11,54 @@ const MAX_TOKENS = 30000; // Leave some buffer for response
 const MAX_INPUT_TOKENS = 25000; // Conservative limit for input
 
 /**
+ * Clean extracted PDF text by removing noise and normalizing formatting
+ * @param {string} text - Raw text extracted from PDF or pasted content
+ * @returns {string} Cleaned and normalized text
+ */
+function cleanExtractedPdfText(text) {
+    if (!text || typeof text !== 'string') {
+        return '';
+    }
+    
+    return text
+        .replace(/\s+/g, ' ')            // Normalize excessive whitespace
+        .replace(/(\r\n|\r|\n)/g, ' ')   // Flatten line breaks
+        .replace(/[^ -~]+/g, '')         // Remove non-printable ASCII
+        .replace(/\s+([.,;:!?])/g, '$1') // Remove spaces before punctuation
+        .replace(/([.,;:!?])\s+/g, '$1 ') // Ensure single space after punctuation
+        .replace(/\s{2,}/g, ' ')         // Ensure single spaces between words
+        .replace(/^\s+|\s+$/g, '')       // Trim leading/trailing whitespace
+        .replace(/([A-Z])\s+([A-Z])/g, '$1 $2') // Preserve acronyms
+        .replace(/(\d+)\s*-\s*(\d+)/g, '$1-$2') // Normalize date ranges
+        .replace(/(\w+)\s*:\s*(\w+)/g, '$1: $2') // Normalize colons
+        .trim();
+}
+
+/**
+ * Clean job description text by removing noise and normalizing formatting
+ * @param {string} text - Raw job description text
+ * @returns {string} Cleaned and normalized text
+ */
+function cleanJobDescriptionText(text) {
+    if (!text || typeof text !== 'string') {
+        return '';
+    }
+    
+    return text
+        .replace(/\s+/g, ' ')            // Normalize excessive whitespace
+        .replace(/(\r\n|\r|\n)/g, ' ')   // Flatten line breaks
+        .replace(/[^ -~]+/g, '')         // Remove non-printable ASCII
+        .replace(/\s+([.,;:!?])/g, '$1') // Remove spaces before punctuation
+        .replace(/([.,;:!?])\s+/g, '$1 ') // Ensure single space after punctuation
+        .replace(/\s{2,}/g, ' ')         // Ensure single spaces between words
+        .replace(/^\s+|\s+$/g, '')       // Trim leading/trailing whitespace
+        .replace(/([A-Z])\s+([A-Z])/g, '$1 $2') // Preserve acronyms
+        .replace(/(\d+)\s*-\s*(\d+)/g, '$1-$2') // Normalize date ranges
+        .replace(/(\w+)\s*:\s*(\w+)/g, '$1: $2') // Normalize colons
+        .trim();
+}
+
+/**
  * Analyzes a resume against a job description using AI
  * @param {string} resume - The resume text content
  * @param {string} jobDescription - The job description text
@@ -30,39 +78,79 @@ export async function getResumeFeedback(resume, jobDescription, customInstructio
             throw new Error('OpenRouter API key is not configured. Please set your API key in config.js');
         }
 
-        // Compress and prepare the text inputs
-        const compressedResume = compressResumeText(resume);
-        const compressedJobDescription = compressJobDescription(jobDescription);
-        const compressedInstructions = customInstructions ? compressInstructions(customInstructions) : '';
-
-        // Estimate token count
-        const estimatedTokens = estimateTokenCount(compressedResume, compressedJobDescription, compressedInstructions);
+        // Prepare the text inputs - never compress resume, only compress job description if needed
+        const cleanedResume = cleanExtractedPdfText(resume); // Clean the resume text
+        const cleanedJobDescription = cleanJobDescriptionText(jobDescription); // Clean the job description text
+        const fullResume = cleanedResume; // Never compress resume
+        const fullInstructions = customInstructions || '';
         
+        // First, try with uncompressed job description
+        let jobDescriptionToUse = cleanedJobDescription;
+        let instructionsToUse = fullInstructions;
+        
+        // Estimate token count with full content
+        let estimatedTokens = estimateTokenCount(fullResume, jobDescriptionToUse, instructionsToUse);
+        
+        // If tokens exceed limit, try compressing job description first
         if (estimatedTokens > MAX_INPUT_TOKENS) {
-            // If still too long, use chunking strategy
-            return await analyzeWithChunking(resume, jobDescription, customInstructions, model);
+            console.log(`Tokens (${estimatedTokens}) exceed limit (${MAX_INPUT_TOKENS}), compressing job description...`);
+            jobDescriptionToUse = compressJobDescription(jobDescription);
+            estimatedTokens = estimateTokenCount(fullResume, jobDescriptionToUse, instructionsToUse);
+            
+            // If still too long, try compressing instructions too
+            if (estimatedTokens > MAX_INPUT_TOKENS && fullInstructions) {
+                console.log(`Still too many tokens (${estimatedTokens}), compressing instructions...`);
+                instructionsToUse = compressInstructions(fullInstructions);
+                estimatedTokens = estimateTokenCount(fullResume, jobDescriptionToUse, instructionsToUse);
+            }
+            
+            // If still too long after compressing job description and instructions, use chunking
+            if (estimatedTokens > MAX_INPUT_TOKENS) {
+                console.log(`Still too many tokens (${estimatedTokens}), using chunking strategy...`);
+                return await analyzeWithChunking(resume, jobDescription, customInstructions, model);
+            }
         }
 
         // Construct the system prompt
-        let systemPrompt = `You are a resume analyzer. Respond with JSON only.`;
+        let systemPrompt = `You are a resume evaluation assistant for recruiters. Your task is to carefully analyze a candidate's resume based on the provided job title and job description.
+
+                            You must respond ONLY in **valid JSON** format using the structure below — do not include any explanations or extra commentary outside the JSON.
+
+                            Your Output Should Include:
+
+                            - **Top 3 Strengths** – These should be meaningful, role-specific strengths that align with the job's core requirements. Avoid generic traits and highlight standout, insightful elements that a recruiter might miss at a glance.
+                            - **Top 3 Weaknesses or Gaps** – These should include missing qualifications, limited experience in required areas, unclear achievements, or potential misalignments with the job description.
+                            - **Overall Assessment** (3–5 sentences) – A clear, recruiter-friendly summary that provides your verdict on the candidate's fit, strengths, and concerns.
+                            - **Score out of 100** – Based on alignment with the job description, relevance of experience, clarity of the resume, and potential impact. This score will be used to rank the candidate among others.`;
         
-        if (compressedInstructions) {
-            systemPrompt += `\n\nAdditional Instructions: ${compressedInstructions}`;
+        if (instructionsToUse) {
+            systemPrompt += `\n\nAdditional Instructions: ${instructionsToUse}`;
         }
 
         // Construct the user prompt
-        const userPrompt = `Analyze this resume against the job description. Return ONLY a JSON object with this exact structure:
+        const userPrompt = `Analyze the candidate below using the provided job information. Return ONLY a JSON object with this exact structure:
 
-        {
-          "score": 75,
-          "strengths": ["strength 1", "strength 2", "strength 3"],
-          "weaknesses": ["weakness 1", "weakness 2", "weakness 3"],
-          "assessment": "brief assessment here"
-        }
+                            {
+                                "score": 75,
+                                "strengths": ["strength 1", "strength 2", "strength 3"],
+                                "weaknesses": ["weakness 1", "weakness 2", "weakness 3"],
+                                "assessment": "brief overall assessment here"
+                            }
 
-        Resume: ${compressedResume}
+                            Avoid copying or repeating exact lines from the resume. Your analysis should offer insight into how well the candidate fits the job beyond what a recruiter could instantly observe.
 
-        Job: ${compressedJobDescription}`;
+                            Job Description: ${jobDescriptionToUse}
+
+                            Resume: ${fullResume}`;
+
+        // Log the request details for debugging
+        console.log('API Request Details:');
+        console.log('Model:', model);
+        console.log('Resume Length:', fullResume.length);
+        console.log('Job Description Length:', jobDescriptionToUse.length);
+        console.log('Instructions Length:', instructionsToUse.length);
+        console.log('Estimated Tokens:', estimatedTokens);
+        console.log('Resume Preview (first 200 chars):', fullResume.substring(0, 200));
 
         // Make the API request
         const response = await fetch(CONFIG.OPENROUTER_API_URL, {
@@ -91,8 +179,13 @@ export async function getResumeFeedback(resume, jobDescription, customInstructio
 
         const data = await response.json();
         
+        // Add detailed logging for debugging
+        console.log('API Response Status:', response.status);
+        console.log('API Response Data:', data);
+        
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-            throw new Error('Invalid response format from API');
+            console.error('Invalid API response structure:', data);
+            throw new Error(`Invalid response format from API. Response: ${JSON.stringify(data)}`);
         }
 
         const assistantResponse = data.choices[0].message.content;

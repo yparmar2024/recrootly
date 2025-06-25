@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recrootly - Demo Dashboard</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.css?v=1.1">
     <link rel="icon" href="owl.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -183,7 +183,7 @@
                         <div class="file-upload-info">
                             <p>Supported formats: PDF, DOC, DOCX, TXT</p>
                             <p>Maximum file size: 10MB</p>
-                            <p><em>Or enter resume text below</em></p>
+                            <p><em>PDF text extraction is now supported!</em></p>
                         </div>
                     </div>
                 </div>
@@ -313,7 +313,7 @@
             <div class="resume-score"></div>
             <div class="resume-info">
                 <h4 class="resume-name"></h4>
-                <p>Click to view detailed analysis</p>
+                <p class="resume-description">Click to view detailed analysis</p>
             </div>
             <button class="btn-secondary btn-trash-resume">
                 <i class="fas fa-trash"></i>
@@ -374,12 +374,19 @@
             </div>
             <h3 id="confirmation-title">Success!</h3>
             <p id="confirmation-message">Operation completed successfully.</p>
-            <button id="confirmation-ok-btn" class="btn-primary">OK</button>
+            <div class="modal-actions">
+                <button id="confirmation-ok-btn" class="btn-primary">OK</button>
+            </div>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Set PDF.js worker path
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <script type="module" src="resumeAnalysis.js"></script>
     <script type="module" src="dashboard.js"></script>
 </body>

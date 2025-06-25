@@ -566,10 +566,17 @@ function setupEventListeners() {
             // If a file is uploaded, read its content
             if (file) {
                 try {
-                    resumeText = await readFileContent(file);
+                    if (file.type === 'application/pdf') {
+                        // Handle PDF files with special extraction
+                        const arrayBuffer = await readFileContent(file);
+                        resumeText = await extractTextFromPDF(arrayBuffer);
+                    } else {
+                        // Handle other file types
+                        resumeText = await readFileContent(file);
+                    }
                 } catch (fileError) {
                     console.error('Error reading file:', fileError);
-                    showConfirmationModal('Error reading resume file. Please try again.', 'error');
+                    showConfirmationModal(`Error reading resume file: ${fileError.message}`, 'error');
                     submitBtn.textContent = originalBtnText;
                     submitBtn.disabled = false;
                     return;
@@ -731,15 +738,47 @@ async function readFileContent(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = (e) => reject(e);
+        reader.onerror = (e) => reject(new Error('Failed to read file'));
         
-        if (file.type === 'text/plain' || file.type === 'application/pdf') {
+        if (file.type === 'text/plain') {
             reader.readAsText(file);
+        } else if (file.type === 'application/pdf') {
+            // For PDFs, read as array buffer for PDF.js processing
+            reader.readAsArrayBuffer(file);
         } else {
             // For other file types, try to read as text
             reader.readAsText(file);
         }
     });
+}
+
+// Helper function to extract text from PDF using PDF.js
+async function extractTextFromPDF(arrayBuffer) {
+    try {
+        // Load the PDF document
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+        
+        let fullText = '';
+        
+        // Extract text from each page
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            
+            // Combine text items from the page
+            const pageText = textContent.items
+                .map(item => item.str)
+                .join(' ');
+            
+            fullText += pageText + '\n';
+        }
+        
+        return fullText.trim();
+    } catch (error) {
+        console.error('PDF extraction error:', error);
+        throw new Error('Failed to extract text from PDF. Please try copying and pasting the text instead.');
+    }
 }
 
 // Helper function to clone and populate templates
