@@ -323,3 +323,68 @@ if (!document.querySelector('meta[name="viewport"]')) {
   viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
   document.head.appendChild(viewport);
 }
+
+// 15. EmailJS Integration
+// Initialize EmailJS
+(function() {
+  emailjs.init('lHfbeCrhcjVrwCnHW');
+})();
+
+// Contact form functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const contactForm = document.querySelector('.contact-form');
+  
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const userEmail = document.getElementById('contact-email').value.trim();
+      const userMessage = document.getElementById('contact-message').value.trim();
+      
+      // Input validation
+      if (!userEmail || !userMessage) {
+        showConfirmationModal('Please fill in all fields before submitting.', 'error');
+        return;
+      }
+      
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(userEmail)) {
+        showConfirmationModal('Please enter a valid email address.', 'error');
+        return;
+      }
+      
+      // Show loading state
+      const submitButton = contactForm.querySelector('button[type="submit"]');
+      const originalText = submitButton.textContent;
+      submitButton.textContent = 'Sending...';
+      submitButton.disabled = true;
+      
+      // Prepare template parameters
+      const templateParams = {
+        name: userEmail.split('@')[0], // Use email prefix as name
+        email: userEmail,
+        message: userMessage,
+        title: 'Contact Form Submission',
+        date: new Date().toLocaleString()
+      };
+      
+      // Send email using EmailJS
+      emailjs.send('service_q5l9qyr', 'template_fsdoj1u', templateParams)
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+          showConfirmationModal('Thank you! Your message has been sent successfully. We\'ll get back to you soon.', 'success');
+          contactForm.reset(); // Clear the form
+        }, function(error) {
+          console.log('FAILED...', error);
+          showConfirmationModal('Sorry, there was an error sending your message. Please try again later.', 'error');
+        })
+        .finally(function() {
+          // Reset button state
+          submitButton.textContent = originalText;
+          submitButton.disabled = false;
+        });
+    });
+  }
+});
