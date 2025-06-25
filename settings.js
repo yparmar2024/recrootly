@@ -365,7 +365,7 @@ async function handleChangeEmail(e) {
         // Show success message
         showModal(
             'Email Update Initiated', 
-            'A confirmation email has been sent to your new email address. Please check your inbox and click the confirmation link to complete the email change.',
+            'A confirmation email has been sent to your old and new email address. Please check your old email address inbox and click the confirmation link to complete the email change.',
             'success'
         );
         
@@ -391,6 +391,13 @@ function showChangePasswordModal() {
         
         // Clear form
         document.getElementById('change-password-form').reset();
+        
+        // Reset submit button text and state
+        const submitBtn = document.querySelector('#change-password-form button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Change Password';
+            submitBtn.disabled = false;
+        }
         
         // Add form submit handler
         const form = document.getElementById('change-password-form');
@@ -734,7 +741,7 @@ function showModal(title, message, type = 'success', showCloseButton = true) {
                 </div>
                 <h3>${title}</h3>
                 <p>${message}</p>
-                ${showCloseButton ? '<button onclick="closeCustomModal()">OK</button>' : ''}
+                ${showCloseButton ? '<button id="custom-modal-ok-btn">OK</button>' : ''}
             </div>
         </div>
     `;
@@ -745,6 +752,14 @@ function showModal(title, message, type = 'success', showCloseButton = true) {
     // Show modal
     const modal = document.getElementById('custom-modal');
     modal.style.display = 'flex';
+
+    // Add event listener to OK button if it exists
+    if (showCloseButton) {
+        const okButton = document.getElementById('custom-modal-ok-btn');
+        if (okButton) {
+            okButton.addEventListener('click', closeCustomModal);
+        }
+    }
 
     // Auto-close for success messages after 3 seconds
     if (type === 'success' && !showCloseButton) {

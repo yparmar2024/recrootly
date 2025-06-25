@@ -201,10 +201,11 @@ body {
     transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
-    min-height: 44px; /* Touch-friendly minimum */
+    min-height: 48px; /* Touch-friendly */
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem; /* Add spacing between icon and text */
 }
 
 .btn-primary:hover {
@@ -467,15 +468,18 @@ body {
 
 .job-details-section .section-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .job-details-section .section-header h2 {
     font-size: 1.5rem;
     font-weight: 600;
     color: #ffffff;
+    white-space: nowrap;
 }
 
 .job-details-section .section-header p {
