@@ -487,6 +487,20 @@ body {
     font-size: 0.9rem;
 }
 
+/* Responsive font sizing for section header paragraph */
+@media (max-width: 768px) {
+    .job-details-section .section-header p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .job-details-section .section-header p {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+}
+
 .resumes-list {
     display: flex;
     flex-direction: column;
