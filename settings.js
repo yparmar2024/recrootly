@@ -13,6 +13,10 @@ const logoutBtn = document.getElementById('logout-btn');
 const confirmationModal = document.getElementById('confirmation-modal');
 const userEmail = document.getElementById('user-email');
 
+// Mobile navigation elements
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const navMenu = document.getElementById('nav-menu');
+
 // Settings data object to store current settings
 let currentSettings = {
     defaultSortOrder: 'score-desc',
@@ -20,13 +24,50 @@ let currentSettings = {
     dataRetention: 60
 };
 
+// Mobile navigation functions
+function toggleMobileMenu() {
+    hamburgerMenu.classList.toggle('active');
+    navMenu.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    hamburgerMenu.classList.remove('active');
+    navMenu.classList.remove('active');
+}
+
 // Initialize settings page
 document.addEventListener('DOMContentLoaded', function() {
     checkAuthState();
     initializeProfileDropdown();
     initializeSettingsControls();
     loadSettings();
+    initializeMobileNavigation();
 });
+
+// Initialize mobile navigation
+function initializeMobileNavigation() {
+    // Mobile navigation event listeners
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Close mobile menu when clicking on navigation links
+    if (navMenu) {
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (hamburgerMenu && navMenu) {
+            if (!hamburgerMenu.contains(event.target) && !navMenu.contains(event.target)) {
+                closeMobileMenu();
+            }
+        }
+    });
+}
 
 // Check authentication state and update UI
 function checkAuthState() {

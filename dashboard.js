@@ -35,6 +35,10 @@ const profileMenu = document.getElementById('profile-menu');
 const userEmail = document.getElementById('user-email');
 const logoutBtn = document.getElementById('logout-btn');
 
+// Mobile navigation elements
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const navMenu = document.getElementById('nav-menu');
+
 // Modal close buttons
 const closeModals = document.querySelectorAll('.close-modal');
 const cancelJobBtn = document.getElementById('cancel-job');
@@ -66,6 +70,17 @@ const cancelRemoveJobBtn = document.getElementById('cancel-remove-job');
 const confirmRemoveJobBtn = document.getElementById('confirm-remove-job');
 
 let jobIdToRemove = null;
+
+// Mobile navigation functions
+function toggleMobileMenu() {
+    hamburgerMenu.classList.toggle('active');
+    navMenu.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    hamburgerMenu.classList.remove('active');
+    navMenu.classList.remove('active');
+}
 
 // Custom confirmation modal function
 function showConfirmationModal(message, type = 'success') {
@@ -279,6 +294,28 @@ function checkAuthState() {
 }
 
 function setupEventListeners() {
+    // Mobile navigation event listeners
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Close mobile menu when clicking on navigation links
+    if (navMenu) {
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (hamburgerMenu && navMenu) {
+            if (!hamburgerMenu.contains(event.target) && !navMenu.contains(event.target)) {
+                closeMobileMenu();
+            }
+        }
+    });
+
     // Add Job Modal
     addJobBtn.addEventListener('click', () => {
         showAddJobModal();
