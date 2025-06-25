@@ -468,11 +468,11 @@ body {
 
 .job-details-section .section-header {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .job-details-section .section-header h2 {
