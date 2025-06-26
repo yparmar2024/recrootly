@@ -38,7 +38,7 @@ Before running this application, you'll need:
 
 ```bash
 git clone <your-repository-url>
-cd Recrootly
+cd 
 ```
 
 ### 2. Install Dependencies
@@ -266,7 +266,7 @@ localStorage.setItem('debugResumeAnalysis', 'true');
 ```
 
 ## 📁 Project Structure
-Recrootly/
+recrootly/
 ├── index.html # Landing page
 ├── dashboard.html # Main dashboard
 ├── settings.html # User settings
